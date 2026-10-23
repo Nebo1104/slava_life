@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новорічний Перелом</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 750px;
+            background-color: #1a1a1a;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            border: 1px solid #2a2a2a;
+        }
+
+        .img-wrapper {
+            width: 100%;
+            height: 380px;
+            position: relative;
+            background-color: #000;
+        }
+
+        #scene-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .content-box {
+            padding: 25px;
+        }
+
+        #story-text {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            min-height: 80px;
+        }
+
+        #choices-box {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-choice {
+            width: 100%;
+            padding: 14px 20px;
+            background-color: #262626;
+            color: #ff9800;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            font-size: 16px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-choice:hover {
+            background-color: #ff9800;
+            color: #121212;
+            border-color: #ff9800;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 600px) {
+            .img-wrapper { height: 240px; }
+            #story-text { font-size: 16px; }
+            .btn-choice { font-size: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div class="img-wrapper">
+        <img id="scene-img" src="" alt="Scene graphic">
+    </div>
+    <div class="content-box">
+        <div id="story-text"></div>
+        <div id="choices-box"></div>
+    </div>
+</div>
+
+<script>
+    // Масив з усіма сценами та логікою переходів
+    const storyData = {
+        start: {
+            text: "Який це день святкувань? Третій? Четвертий? Орендована хата перетворилася на автономну республіку угару. Новий рік відзначили на повну, дівчата за викликом додали вечірці динаміки, але сили вже на межі. У голові гуде, а в роті наче пустеля Сахара.",
+            image: "image_HAYSEN.png", // Перша згенерована картинка
+            choices: [
+                { text: "👉 Піти пошукати мінералку на кухню", next: "kitchen" },
+                { text: "👉 Спробувати згадати, який зараз взагалі рік", next: "think" }
+            ]
+        },
+        think: {
+            text: "Пам'ять підводить, перед очима все трохи пливе. Календарики на стіні натякають, що зараз початок січня. Голоси з кухні стають гучнішими — схоже, основний склад перемістився туди. Треба йти на звук.",
+            image: "image_HAYSEN.png",
+            choices: [
+                { text: "👉 Рушити на кухню", next: "kitchen" }
+            ]
+        },
+        kitchen: {
+            text: "Кухня зйомної квартири зустрічає задимленим повітрям і слабким жовтим світлом. На столі — класичний натюрморт: завітряний олів'є, нарізка та шкірки від мандаринів. Друзі ліниво обговорюють якусь побутову дурню. Атмосфера розслаблена й абсолютно відірвана від реальності.",
+            image: "scene2.png",
+            choices: [
+                { text: "👉 Вклинитися в розмову", next: "phone_flash" },
+                { text: "👉 Мовчки налити собі чаю", next: "phone_flash" }
+            ]
+        },
+        phone_flash: {
+            text: "Раптом загальний гул затихає. Одна з дівчат припиняє жувати мандарин і застигає, втупившись у свій телефон. Холодне синє світло від екрана підсвічує її обличчя, яке моментально стає кам'яним. Вона піднімає очі: 'Хлопці, почекайте... У мене ж син зараз там, у Києві...'",
+            image: "scene3.png",
+            choices: [
+                { text: "👉 «А що там у Києві?»", next: "climax" },
+                { text: "👉 Зазирнути їй через плече в екран", next: "climax" }
+            ]
+        },
+        climax: {
+            text: "Вона повертає екран до вас. Голос дівчини трохи тремтить, вмить збиваючи весь алкогольний угар: 'Там революція почалася. Погроми, мітинги, все перекрито...'. Секунду тому ви сміялися в закритій коробці квартири, а прямо зараз зовсім поруч ламається стара епоха.",
+            image: "scene4.png",
+            choices: [
+                { text: "👉 Відкрити стрічку новин", next: "final" }
+            ]
+        },
+        final: {
+            text: "Вечірка закінчилася зовсім не так, як планувалося. Наступні кілька годин ви всі разом гортали стрічки новин, дивлячись на палаючі кадри з центру столиці. Світ за стінами цієї квартири змінився назавжди, залишивши цю ніч у пам'яті як останній момент старого, спокійного життя. Гра пройдена.",
+            image: "scene5.png",
+            choices: [] // Порожній масив означає кінець гри
+        }
+    };
+
+    function renderScene(sceneId) {
+        const scene = storyData[sceneId];
+        if (!scene) return;
+
+        // Оновлюємо текст та картинку
+        document.getElementById("story-text").innerText = scene.text;
+        
+        const imgElement = document.getElementById("scene-img");
+        imgElement.style.opacity = 0; // Плавне зникнення
+        
+        setTimeout(() => {
+            imgElement.src = scene.image;
+            imgElement.style.opacity = 1; // Плавна поява
+        }, 150);
+
+        // Очищуємо та рендеримо кнопки
+        const choicesBox = document.getElementById("choices-box");
+        choicesBox.innerHTML = "";
+
+        scene.choices.forEach(choice => {
+            const button = document.createElement("button");
+            button.className = "btn-choice";
+            button.innerText = choice.text;
+            button.onclick = () => renderScene(choice.next);
+            choicesBox.appendChild(button);
+        });
+    }
+
+    // Старт гри з першої сцени
+    window.onload = () => {
+        renderScene("start");
+    };
+</script>
+</body>
+</html>
